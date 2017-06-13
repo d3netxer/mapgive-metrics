@@ -33,10 +33,13 @@ result: 7,546
 SELECT COUNT(planet.changeset)
 FROM planet
 JOIN changesets ON planet.changeset = changesets.id
-WHERE regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet.type = 'way' AND planet.tags['building'] IN ('yes');
+WHERE regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet.type = 'way' AND planet.tags['building'] IS NOT NULL;
 ```
 
-result: 1,360,720
+result: 1,485,146
+
+note: Use planet.tags['building'] IS NOT NULL vs. planet.tags['building'] IN ('yes');
+It returns more results (1,485,146 vs 1,360,720), and is consistent with the queries found below.
 
 - count of highways
 
