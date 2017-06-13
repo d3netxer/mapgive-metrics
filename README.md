@@ -51,6 +51,12 @@ result: 144,859
 
 This query returns all of the highways, but how can I display them on GIS software, and how can I calculate the km of roads created?
 
+```
+SELECT planet.*, changesets.id
+FROM planet
+JOIN changesets ON planet.changeset = changesets.id
+WHERE regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet.type = 'way' AND regexp_like(planet.tags['highway'], '(?i).')
+```
 
 - map of buildings created?
 
