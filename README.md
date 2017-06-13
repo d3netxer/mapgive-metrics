@@ -126,6 +126,8 @@ JOIN nodes_in_bbox nodes ON nodes.id = nd.ref
 GROUP BY (buildings.type, buildings.id, buildings.tags)
 ```
 
+result: 1,485,146
+
 - map of all ways and nodes created?
 
 - line chart of edits over time (look into processing csv with python pandas)
