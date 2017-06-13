@@ -51,7 +51,13 @@ result: 144,859
 
 This query returns all of the highways, but how can I display them on GIS software, and how can I calculate the km of roads created?
 
+
 - map of buildings created?
+
+example form American Red Cross with building points:
+https://api.mapbox.com/styles/v1/americanredcross/ciyj2djn800222socis30umwr.html?title=true&access_token=pk.eyJ1IjoiYW1lcmljYW5yZWRjcm9zcyIsImEiOiJzdHVRWjA4In0.bnfdwZhKX8tQeMkwY-kknQ#12.37/-1.5454/33.8255
+
+
 
 - map of all ways and nodes created?
 
