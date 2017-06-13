@@ -104,6 +104,8 @@ JOIN nodes_in_bbox nodes ON nodes.id = nd.ref
 GROUP BY (buildings.type, buildings.id, buildings.tags)
 ```
 
+result: 1,485,146 (88mb file)
+
 something like this can be used to count the total records returned https://stackoverflow.com/questions/5146978/count-number-of-records-returned-by-group-by):
 
 ```
@@ -130,6 +132,8 @@ GROUP BY (buildings.type, buildings.id, buildings.tags)
 ```
 
 result: 1,485,146
+
+I was able to the 88mb building point file and upload it to Carto through the website, then create a visualization: https://tgertin.carto.com/viz/96b70c67-e6c3-4196-81be-d876c6f4a068/public_map
 
 - map of all ways and nodes created?
 
