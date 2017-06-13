@@ -55,4 +55,4 @@ This query returns all of the highways, but how can I display them on GIS softwa
 
 - map of all ways and nodes created?
 
-- line chart of edits over time
+- line chart of edits over time (look into processing csv with python pandas)
