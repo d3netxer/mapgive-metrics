@@ -101,6 +101,31 @@ JOIN nodes_in_bbox nodes ON nodes.id = nd.ref
 GROUP BY (buildings.type, buildings.id, buildings.tags)
 ```
 
+something like this can be used to count the total records returned https://stackoverflow.com/questions/5146978/count-number-of-records-returned-by-group-by):
+
+```
+WITH buildings AS (
+  SELECT planet.*
+  FROM planet
+  JOIN changesets ON planet.changeset = changesets.id
+  WHERE regexp_like(changesets.tags['comment'], '(?i)#mapgive')
+    AND planet.type = 'way'
+    AND planet.tags['building'] IS NOT NULL
+),
+nodes_in_bbox AS (
+  SELECT *
+  FROM planet
+  WHERE type = 'node'
+)
+SELECT
+  count(*) RecordsPerGroup,
+  COUNT(*) OVER () AS TotalRecords
+FROM buildings
+CROSS JOIN UNNEST(nds) AS t (nd)
+JOIN nodes_in_bbox nodes ON nodes.id = nd.ref
+GROUP BY (buildings.type, buildings.id, buildings.tags)
+```
+
 - map of all ways and nodes created?
 
 - line chart of edits over time (look into processing csv with python pandas)
