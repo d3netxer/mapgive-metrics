@@ -38,12 +38,21 @@ WHERE regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet.type = 
 
 result: 1,360,720
 
-- km of roads created
+- count of highways
 
-- map of buildings created
+```
+SELECT COUNT(planet.changeset)
+FROM planet
+JOIN changesets ON planet.changeset = changesets.id
+WHERE regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet.type = 'way' AND regexp_like(planet.tags['highway'], '(?i).')
+```
 
-- map of all ways and nodes created
+result: 144,859
 
-- where mappers are located?
+This query returns all of the highways, but how can I display them on GIS software, and how can I calculate the km of roads created?
+
+- map of buildings created?
+
+- map of all ways and nodes created?
 
 - line chart of edits over time
