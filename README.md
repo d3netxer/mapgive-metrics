@@ -74,49 +74,31 @@ result: 144,859 (1.7 mb file)
 example form American Red Cross with building points:
 https://api.mapbox.com/styles/v1/americanredcross/ciyj2djn800222socis30umwr.html?title=true&access_token=pk.eyJ1IjoiYW1lcmljYW5yZWRjcm9zcyIsImEiOiJzdHVRWjA4In0.bnfdwZhKX8tQeMkwY-kknQ#12.37/-1.5454/33.8255
 
-I tried something like this, but it gave an error: Query exhausted resources at this scale factor
+This query works from Seth:
 
 ```
--- select out nodes and relevant columns
-WITH nodes AS (
-  SELECT
-    type,
-    id,
-    tags,
-    lat,
-    lon
+WITH buildings AS (
+  SELECT planet.*
   FROM planet
-  WHERE type = 'node'
+  JOIN changesets ON planet.changeset = changesets.id
+  WHERE regexp_like(changesets.tags['comment'], '(?i)#mapgive')
+    AND planet.type = 'way'
+    AND planet.tags['building'] IS NOT NULL
 ),
--- select out ways and relevant columns
-ways AS (
-  SELECT
-    type,
-    id,
-    tags,
-    nds
-  FROM planet
-  WHERE type = 'way'
-    AND tags['building'] IN ('yes')
-),
--- filter nodes to only contain those present within a bounding box
 nodes_in_bbox AS (
   SELECT *
-  FROM nodes
-  WHERE lon BETWEEN -15.0863 AND -7.3651
-    AND lat BETWEEN 4.3531 AND 12.6762
+  FROM planet
+  WHERE type = 'node'
 )
--- find ways intersecting the bounding box
 SELECT
-  ways.type,
-  ways.id,
-  ways.tags,
+  buildings.id,
+  buildings.tags,
   AVG(nodes.lat) lat,
   AVG(nodes.lon) lon
-FROM ways
+FROM buildings
 CROSS JOIN UNNEST(nds) AS t (nd)
 JOIN nodes_in_bbox nodes ON nodes.id = nd.ref
-GROUP BY (ways.type, ways.id, ways.tags)
+GROUP BY (buildings.type, buildings.id, buildings.tags)
 ```
 
 - map of all ways and nodes created?
