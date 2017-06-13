@@ -41,7 +41,9 @@ result: 1,360,720
 - km of roads created
 
 - map of buildings created
+
 - map of all ways and nodes created
+
 - where mappers are located?
 
 - line chart of edits over time
