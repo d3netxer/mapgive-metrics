@@ -9,6 +9,23 @@ What metrics do we want to generate?
 
 - number changesets have been created
 
+```
+SELECT COUNT(*)
+FROM changesets
+WHERE regexp_like(tags['comment'], '(?i)#mapgive')
+```
+
+result: 164,302
+
+- number of distinct mappers
+
+```
+SELECT COUNT(DISTINCT uid)
+FROM changesets
+WHERE regexp_like(tags['comment'], '(?i)#mapgive')
+```
+
+result: 7,546
 
 - number of buildings created
 
