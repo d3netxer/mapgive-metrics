@@ -58,6 +58,17 @@ JOIN changesets ON planet.changeset = changesets.id
 WHERE regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet.type = 'way' AND regexp_like(planet.tags['highway'], '(?i).')
 ```
 
+This query will only return the ids of all of the highways with the MapGive hashtag. Then try fetching the highways from overpass.
+
+```
+SELECT planet.id
+FROM planet
+JOIN changesets ON planet.changeset = changesets.id
+WHERE regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet.type = 'way' AND regexp_like(planet.tags['highway'], '(?i).')
+```
+
+result: 144,859 (1.7 mb file)
+
 - map of buildings created?
 
 example form American Red Cross with building points:
