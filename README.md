@@ -7,7 +7,7 @@ https://aws.amazon.com/blogs/big-data/querying-openstreetmap-with-amazon-athena/
 
 What metrics do we want to generate?
 
-### number changesets have been created
+### number changesets created
 
 ```
 SELECT COUNT(*)
@@ -52,7 +52,7 @@ WHERE regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet.type = 
 
 result: 144,859
 
-### Kilometers of roads created? 
+### Kilometers of roads created 
 
 This query returns all of the highways, but how can I display them on GIS software, and how can I calculate the km of roads created?
 
@@ -101,7 +101,7 @@ FROM public.ogrgeojson
 
 The result will be in meters (53566249.2930868). Convert to km for final result: 53,566 km
 
-### map of all buildings created?
+### Map of all buildings created
 
 example form American Red Cross with building points:
 https://api.mapbox.com/styles/v1/americanredcross/ciyj2djn800222socis30umwr.html?title=true&access_token=pk.eyJ1IjoiYW1lcmljYW5yZWRjcm9zcyIsImEiOiJzdHVRWjA4In0.bnfdwZhKX8tQeMkwY-kknQ#12.37/-1.5454/33.8255
