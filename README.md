@@ -165,3 +165,23 @@ result: 1,485,146
 I was able to the 88mb building point file and upload it to Carto through the website, then create a visualization: https://tgertin.carto.com/viz/96b70c67-e6c3-4196-81be-d876c6f4a068/public_map
 
 ### line chart of edits over time (look into processing csv with python pandas)?
+
+count of MapGive ways and amenity points
+
+SELECT COUNT(planet.changeset)
+FROM planet
+JOIN changesets ON planet.changeset = changesets.id
+WHERE (regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet.type = 'way') 
+    OR (regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet.type = 'node' AND planet.tags['amenity'] IS NOT NULL)
+	
+result: 1,721,856
+
+dataset MapGive ways and amenity points with an id and timestamp column
+
+SELECT planet.id, planet.timestamp
+FROM planet
+JOIN changesets ON planet.changeset = changesets.id
+WHERE (regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet.type = 'way') 
+    OR (regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet.type = 'node' AND planet.tags['amenity'] IS NOT NULL)
+	
+size: 63 mb file
