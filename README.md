@@ -75,9 +75,23 @@ result: 144,859 (1.7 mb file)
 
 In OverPass you can create a line for each highway id you want to query. ex:
 
-way(313913835);
-way(314205679);
-way(314205680);
+way(id:4821271,
+4823828,
+44329138,
+176735342,
+176738254,
+479583192,
+479583193,
+479583195,
+479583196,
+479583197
+);
+
+/*added by auto repair*/
+(._;>;);
+/*end of auto repair*/
+out;
+
 ...
 
 so you will have to manupilate the CSV to look like the lines above then paste into an OverPass Turbo query. Using OverPass Turbo I could only query 40,000 ways at a time, so I made 4 seperate queries and exported them as geojson.
