@@ -236,6 +236,7 @@ GROUP BY (features.type, features.id, features.timestamp)
 
 size: 106 mb file
 
+### Count of MapGive ways and amenity points with lat, lon, and timestamp column
 
 ```
 WITH features AS (
@@ -260,3 +261,55 @@ GROUP BY (features.type, features.id, features.timestamp)
 ```
 
 count: 1,768,338 (date: July 3, 2017)
+
+
+### OSMGeoWeek 2017 ways and amenity points with lat, lon, and timestamp column
+
+```
+WITH features AS (
+  SELECT planet.*
+  FROM planet
+  JOIN changesets ON planet.changeset = changesets.id
+  WHERE (regexp_like(changesets.tags['comment'], '(?i)#osmgeoweek2017') AND planet.type = 'way')
+    OR (regexp_like(changesets.tags['comment'], '(?i)#osmgeoweek2017') AND planet.type = 'node' AND planet.tags['amenity'] IS NOT NULL)
+),
+nodes_in_bbox AS (
+  SELECT *
+  FROM planet
+  WHERE type = 'node'
+)
+SELECT
+  features.id,
+  features.timestamp,
+  AVG(nodes.lat) lat,
+  AVG(nodes.lon) lon
+FROM features
+CROSS JOIN UNNEST(nds) AS t (nd)
+JOIN nodes_in_bbox nodes ON nodes.id = nd.ref
+GROUP BY (features.type, features.id, features.timestamp)
+order by features.timestamp DESC
+```
+
+### OSMGeoWeek 2017 count of features
+
+```
+WITH features AS (
+  SELECT planet.*
+  FROM planet
+  JOIN changesets ON planet.changeset = changesets.id
+  WHERE (regexp_like(changesets.tags['comment'], '(?i)#osmgeoweek2017') AND planet.type = 'way')
+    OR (regexp_like(changesets.tags['comment'], '(?i)#osmgeoweek2017') AND planet.type = 'node' AND planet.tags['amenity'] IS NOT NULL)
+),
+nodes_in_bbox AS (
+  SELECT *
+  FROM planet
+  WHERE type = 'node'
+)
+SELECT
+  count(*) RecordsPerGroup,
+  COUNT(*) OVER () AS TotalRecords
+FROM features
+CROSS JOIN UNNEST(nds) AS t (nd)
+JOIN nodes_in_bbox nodes ON nodes.id = nd.ref
+GROUP BY (features.type, features.id, features.timestamp)
+```
