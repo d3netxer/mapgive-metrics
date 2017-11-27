@@ -316,3 +316,28 @@ CROSS JOIN UNNEST(nds) AS t (nd)
 JOIN nodes_in_bbox nodes ON nodes.id = nd.ref
 GROUP BY (features.type, features.id, features.timestamp)
 ```
+
+### OSMGeoWeek 2017 count of features, between two dates
+
+```
+WITH features AS (
+  SELECT planet.*
+  FROM planet
+  JOIN changesets ON planet.changeset = changesets.id
+  WHERE (planet.timestamp BETWEEN timestamp '2017-11-12 00:00:00.000' AND timestamp '2017-11-19 00:00:00.000') AND ((regexp_like(changesets.tags['comment'], '(?i)#osmgeoweek2017') AND planet.type = 'way')
+    OR (regexp_like(changesets.tags['comment'], '(?i)#osmgeoweek2017') AND planet.type = 'node' AND planet.tags['amenity'] IS NOT NULL))
+),
+nodes_in_bbox AS (
+  SELECT *
+  FROM planet
+  WHERE type = 'node'
+)
+SELECT
+  count(*) RecordsPerGroup,
+  features.timestamp,
+  COUNT(*) OVER () AS TotalRecords
+FROM features
+CROSS JOIN UNNEST(nds) AS t (nd)
+JOIN nodes_in_bbox nodes ON nodes.id = nd.ref
+GROUP BY (features.type, features.id, features.timestamp)
+```
