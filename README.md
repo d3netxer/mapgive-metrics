@@ -252,11 +252,14 @@ nodes_in_bbox AS (
   WHERE type = 'node'
 )
 SELECT
+  /* each row's RecordsPerGroup number will represent the number of nodes belonging to that feature */
   count(*) RecordsPerGroup,
+  /* this counts the total features (or the number of rows) */
   COUNT(*) OVER () AS TotalRecords
 FROM features
 CROSS JOIN UNNEST(nds) AS t (nd)
 JOIN nodes_in_bbox nodes ON nodes.id = nd.ref
+/* This line below groups the nodes by features */
 GROUP BY (features.type, features.id, features.timestamp)
 ```
 
