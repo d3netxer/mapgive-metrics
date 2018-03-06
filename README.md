@@ -371,3 +371,33 @@ GROUP BY (features.type, features.id, features.timestamp)
 ```
 
 result: 110,006
+
+
+### MapGive buildings and highways with id, lat, lon, timestamp, and column classifying as either building or highway
+
+```
+WITH features AS (
+  SELECT planet.*
+  FROM planet
+  JOIN changesets ON planet.changeset = changesets.id
+  WHERE (regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet.type = 'way' AND planet.tags['building'] IS NOT NULL)
+    OR (regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet.type = 'way' AND planet.tags['highway'] IS NOT NULL)
+),
+nodes_in_bbox AS (
+  SELECT *
+  FROM planet
+  WHERE type = 'node'
+)
+SELECT
+  features.id,
+  features.timestamp,
+  CASE WHEN features.tags['building'] IS NOT NULL THEN 'building' 
+       WHEN features.tags['highway'] IS NOT NULL THEN 'highway' 
+       ELSE NULL END AS building_or_hwy,
+  AVG(nodes.lat) lat,
+  AVG(nodes.lon) lon
+FROM features
+CROSS JOIN UNNEST(nds) AS t (nd)
+JOIN nodes_in_bbox nodes ON nodes.id = nd.ref
+GROUP BY (features.id, features.timestamp,features.tags)
+```
