@@ -52,6 +52,75 @@ WHERE regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet.type = 
 
 result: 144,859
 
+#### update: We have decided to query from the planet_history file. This will enable to get all edits ever (i.e. edits to buildings that have been subsequently modified). Here is the example of buildings from the planet_history file:
+
+```
+select count(planet_history.id)
+from planet_history
+join changesets on planet_history.changeset = changesets.id
+where regexp_like(changesets.tags['comment'], '(?i)#mapgive') and planet_history.type = 'way' and planet_history.tags['building'] is not null
+```
+
+Dec 11, 2018 result: 2,930,728
+
+##### The query above only counts modifications to the way itself (i.e. metadata or lists of nodes), if a building vertex has been shifted (node moved), it won't get captured here. Therefore you could create a query that would find all buildings through looking at all the modified nodes first. ex:
+
+```
+WITH changesets AS (
+  SELECT
+    changesets.id,
+    min_lat,
+    max_lat,
+    min_lon,
+    max_lon
+  FROM changesets
+  WHERE regexp_like(changesets.tags['comment'], '(?i)#mapgive')
+),
+nodes_modified AS (
+  SELECT
+    c.id changeset,
+    nodes.id,
+    nodes.timestamp
+  FROM planet_history nodes
+  INNER JOIN changesets c ON nodes.changeset = c.id
+  WHERE nodes.type = 'node'
+),
+buildings AS (
+  SELECT
+    id,
+    nds,
+    "timestamp",
+    version
+  FROM planet_history ways
+  WHERE type = 'way'
+    AND tags['building'] IS NOT NULL
+),
+referenced_buildings AS (
+  SELECT DISTINCT
+    buildings.id,
+    nodes.changeset,
+    nodes.timestamp
+  FROM buildings
+  CROSS JOIN UNNEST(nds) WITH ORDINALITY AS t (nd, idx)
+  INNER JOIN nodes_modified nodes ON nodes.id = nd.ref
+),
+final_count AS (
+  SELECT  a.*
+  FROM    referenced_buildings A
+          INNER JOIN
+          (
+              SELECT id, MIN(timestamp) minDate
+              FROM    referenced_buildings
+              GROUP BY id
+          ) B on a.id = b.id AND
+                  a.timestamp = b.minDate
+)
+SELECT COUNT(*)
+FROM final_count
+```
+
+Dec 11, 2018 result: 3,033,217
+
 ### Kilometers of roads created 
 
 This query returns all of the highways, but how can I display them on GIS software, and how can I calculate the km of roads created?
@@ -208,7 +277,6 @@ size: 63 mb file
 
 
 ### MapGive ways and amenity points with lat, lon, and timestamp column
-
 
 ```
 WITH features AS (
