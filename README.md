@@ -542,7 +542,7 @@ nodes_in_bbox AS (
   SELECT *
   FROM planet
   WHERE (type = 'node') 
-  AND (lon BETWEEN 0 AND -180)
+  AND (lon BETWEEN -180 AND 0)
 )
 SELECT
   features.id,
