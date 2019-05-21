@@ -525,3 +525,35 @@ JOIN nodes_in_bbox nodes ON nodes.id = nd.ref
 GROUP BY (features.id, features.timestamp,features.tags,features.user)
 ```
 
+
+### MapGive buildings and highways with id, lat, lon, timestamp, user, and column classifying as either building or highway using planet_history
+
+** note that it now gives the following error: 'Query exhausted resources at this scale factor'
+
+```
+WITH features AS (
+  SELECT planet_history.*
+  FROM planet_history
+  JOIN changesets ON planet_history.changeset = changesets.id
+  WHERE (regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet_history.type = 'way' AND planet_history.tags['building'] IS NOT NULL)
+    OR (regexp_like(changesets.tags['comment'], '(?i)#mapgive') AND planet_history.type = 'way' AND planet_history.tags['highway'] IS NOT NULL)
+),
+nodes_in_bbox AS (
+  SELECT *
+  FROM planet_history
+  WHERE type = 'node'
+)
+SELECT
+  features.id,
+  features.timestamp,
+  features.user,
+  CASE WHEN features.tags['building'] IS NOT NULL THEN 'building' 
+       WHEN features.tags['highway'] IS NOT NULL THEN 'highway' 
+       ELSE NULL END AS building_or_hwy,
+  AVG(nodes.lat) lat,
+  AVG(nodes.lon) lon
+FROM features
+CROSS JOIN UNNEST(nds) AS t (nd)
+JOIN nodes_in_bbox nodes ON nodes.id = nd.ref
+GROUP BY (features.id, features.timestamp,features.tags,features.user)
+```
