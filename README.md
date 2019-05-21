@@ -526,9 +526,9 @@ GROUP BY (features.id, features.timestamp,features.tags,features.user)
 ```
 
 
-### MapGive buildings and highways with id, lat, lon, timestamp, user, and column classifying as either building or highway using planet_history
+### MapGive buildings and highways with id, lat, lon, timestamp, user, and column classifying as either building or highway using planet_history for half of the planet
 
-** note that it now gives the following error: 'Query exhausted resources at this scale factor'
+** you need to split the world into two in order to avoid the following error: 'Query exhausted resources at this scale factor'
 
 ```
 WITH features AS (
@@ -540,8 +540,9 @@ WITH features AS (
 ),
 nodes_in_bbox AS (
   SELECT *
-  FROM planet_history
-  WHERE type = 'node'
+  FROM planet
+  WHERE (type = 'node') 
+  AND (lon BETWEEN 0 AND -180)
 )
 SELECT
   features.id,
